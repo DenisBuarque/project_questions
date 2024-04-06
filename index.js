@@ -28,11 +28,23 @@ app.get("/", (req, res) => {
 });
 
 app.get("/questions", (req, res) => {
-  Question.findAll({ raw: true }).then((questions) => {
+  Question.findAll({ raw: true, order: [['id','DESC']] }).then((questions) => {
     console.log(questions);
   });
   res.send("Lista de perguntas e respostas:");
 });
+
+app.get('/question/:id', (req, res) => {
+  const id = req.params.id;
+  Question.findOne({ raw: true, where: {id: id}}).then(question => {
+    if(question !== undefined) {
+      res.send("Questão encontrada!");
+      console.log(question);
+    } else {
+      res.send("Questão não encontrada!");
+    }
+  })
+})
 
 app.post("/question/store", (req, res) => {
   const { title, description } = req.body;
@@ -43,7 +55,7 @@ app.post("/question/store", (req, res) => {
   };
 
   Question.create(data).then(() => {
-    res.send("Dados inseridos com sucesso!"); // or res.redirect('/');
+    res.send("Dados inseridos com sucesso!");
   });
 });
 
